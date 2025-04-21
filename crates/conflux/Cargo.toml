@@ -1,0 +1,30 @@
+[package]
+name = "conflux"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[dependencies]
+camino = { version = "1.1.9" }
+bytes = "1.10.1"
+merde = { workspace = true, features = ["time"] }
+time = "0.3.41"
+minijinja = { workspace = true, optional = true }
+closest = { path = "../closest" }
+config = { path = "../config", features = [] }
+plait = { path = "../plait" }
+image = { path = "../image" }
+content-type = { path = "../content-type", features = [] }
+credentials = { path = "../credentials" }
+url = "2.5.4"
+serde = { version = "1.0", optional = true }
+rusqlite = { workspace = true, optional = true }
+objectstore = { path = "../objectstore" }
+noteyre = { version = "0.1.0", path = "../noteyre" }
+facet.workspace = true
+
+[features]
+default = []
+minijinja = ["dep:minijinja", "time/macros", "time/formatting"]
+serde = ["dep:serde"]
+rusqlite = ["dep:rusqlite"]

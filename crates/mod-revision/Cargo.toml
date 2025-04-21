@@ -1,0 +1,72 @@
+[package]
+name = "mod-revision"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+atomicwrites = { version = "0.4.4", optional = true }
+camino = { version = "1.1.9", optional = true }
+closest = { version = "0.1.0", path = "../closest", optional = true }
+config = { version = "0.1.0", path = "../config" }
+conflux = { version = "0.1.0", path = "../conflux" }
+content-type = { version = "0.1.0", path = "../content-type", optional = true }
+cub-types = { version = "0.1.0", path = "../cub-types" }
+derivations = { version = "0.1.0", path = "../derivations", optional = true }
+dylo.workspace = true
+dylo-runtime = "2.5.0"
+errhandling = { version = "0.1.0", path = "../errhandling", optional = true }
+eyre.workspace = true
+facet-json = "0.11.1"
+facet-pretty = "0.13.0"
+fs = { version = "0.1.0", path = "../fs", optional = true }
+futures-core = "0.3.31"
+image = { version = "0.1.0", path = "../image", optional = true }
+itertools = { version = "0.14.0", optional = true }
+markdown = { version = "0.1.0", path = "../markdown", optional = true }
+merde = { workspace = true, optional = true }
+noteyre = { version = "0.1.0", path = "../noteyre", optional = true }
+rayon = { version = "1.10.0", optional = true }
+redb = { version = "2.4.0", optional = true }
+seahash = { version = "4.1.0", optional = true }
+search = { version = "0.1.0", path = "../search", optional = true }
+svg = { version = "0.1.0", path = "../svg", optional = true }
+template = { version = "0.1.0", path = "../template", optional = true }
+time = { version = "0.3.41", optional = true }
+tokio = { workspace = true, optional = true }
+tracing = { workspace = true, optional = true }
+uffmpeg = { version = "0.1.0", path = "../uffmpeg", optional = true }
+ulid = { version = "1.2.1", optional = true }
+wildmatch = { version = "2.4.0", optional = true }
+
+[features]
+default = ["impl"]
+impl = [
+    "dep:atomicwrites",
+    "dep:closest",
+    "dep:content-type",
+    "dep:derivations",
+    "dep:image",
+    "dep:itertools",
+
+    "dep:markdown",
+    "dep:merde",
+    "dep:rayon",
+    "dep:seahash",
+    "dep:search",
+    "dep:svg",
+    "dep:template",
+    "dep:tokio",
+    "dep:tracing",
+    "dep:uffmpeg",
+    "dep:ulid",
+    "dep:errhandling",
+    "dep:time",
+    "dep:noteyre",
+    "dep:wildmatch",
+    "dep:camino",
+    "dep:fs",
+    "dep:redb",
+]

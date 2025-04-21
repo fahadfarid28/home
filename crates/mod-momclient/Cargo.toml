@@ -1,0 +1,33 @@
+[package]
+name = "mod-momclient"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+dylo.workspace = true
+config = { path = "../config" }
+conflux = { path = "../conflux", features = [] }
+httpclient = { path = "../httpclient", features = ["json"] }
+
+# impl deps
+merde = { workspace = true, features = ["json"] }
+rand = { version = "0.8.5", optional = true }
+tokio = { workspace = true, features = ["time"], optional = true }
+tracing = { version = "0.1.41", optional = true }
+credentials = { path = "../credentials" }
+mom = { path = "../mom" }
+github = { path = "../github" }
+patreon = { path = "../patreon" }
+bytes = "1.10.1"
+websock = { path = "../websock", optional = true }
+objectstore = { path = "../objectstore" }
+dylo-runtime = "2.5.0"
+noteyre = { version = "0.1.0", path = "../noteyre" }
+futures-core = "0.3.31"
+
+[features]
+default = ["impl"]
+impl = ["dep:rand", "dep:tokio", "dep:tracing", "dep:websock"]

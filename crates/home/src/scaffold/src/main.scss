@@ -1,0 +1,41 @@
+// this is how sass modules are imported — this is a sample
+// SCSS reset from 2023, which helps things look consistent
+// across browsers
+@use "reset";
+
+// includes bearcove base styles — useful for syntax highlighted
+// code blocks, the video player, etc.
+@use "@bearcove/home-base/base.scss" as bearcove;
+
+:root {
+  // these could be custom web fonts
+  --main-font:
+    system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu,
+    Cantarell, "Helvetica Neue", sans-serif;
+
+  // this is important: it lets the browser know we support
+  // both dark scheme and light scheme.
+  color-scheme: light dark;
+}
+
+html {
+  font-family: var(--main-font);
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-size: 18px;
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  // enable dark scheme automatically
+  html {
+    color-scheme: dark;
+  }
+}
+
+body {
+  padding: 1rem;
+  line-height: 1.5;
+}
+
+// the rest is up to you!

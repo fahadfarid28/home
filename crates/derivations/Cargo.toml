@@ -1,0 +1,15 @@
+[package]
+name = "derivations"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+closest = { version = "0.1.0", path = "../closest" }
+config = { version = "0.1.0", path = "../config" }
+conflux = { version = "0.1.0", path = "../conflux" }
+content-type = { version = "0.1.0", path = "../content-type" }
+image = { version = "0.1.0", path = "../image" }
+noteyre = { version = "0.1.0", path = "../noteyre" }
+objectstore = { version = "0.1.0", path = "../objectstore" }
+seahash = "4.1.0"
+tokio.workspace = true

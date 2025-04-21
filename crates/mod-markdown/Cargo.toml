@@ -1,0 +1,40 @@
+[package]
+name = "mod-markdown"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+conflux = { path = "../conflux", features = [] }
+
+# impl dependencies
+html-escape = { version = "0.2.13", optional = true }
+pulldown-cmark = { version = "0.11.3", features = ["simd"], optional = true }
+saphyr = { version = "0.0.1", default-features = false, optional = true }
+slug = { version = "0.1.6", optional = true }
+template = { path = "../template" }
+highlight = { path = "../highlight", optional = true }
+math = { path = "../math", optional = true }
+dylo.workspace = true
+dylo-runtime = "2.5.0"
+config = { version = "0.1.0", path = "../config" }
+media = { version = "0.1.0", path = "../media", optional = true }
+noteyre = { version = "0.1.0", path = "../noteyre" }
+
+[dev-dependencies]
+indoc = "2.0.6"
+insta = "1.42.2"
+
+[features]
+default = ["impl"]
+impl = [
+    "dep:html-escape",
+    "dep:pulldown-cmark",
+    "dep:saphyr",
+    "dep:slug",
+    "dep:highlight",
+    "dep:math",
+    "dep:media",
+]

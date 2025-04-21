@@ -1,0 +1,33 @@
+[package]
+name = "mod-webpage"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+dylo.workspace = true
+dylo-runtime = "2.5.0"
+merde.workspace = true
+
+# impl deps
+webpage = { version = "2.0.1", optional = true, default-features = false }
+tokio = { workspace = true, optional = true }
+url = { version = "2.5.4", optional = true }
+base64 = { version = "0.22.1", optional = true }
+futures-util = { version = "0.3.31", optional = true }
+image = { version = "0.1.0", path = "../image" }
+futures-core = "0.3.31"
+httpclient = { version = "0.1.0", path = "../httpclient", optional = true }
+
+[features]
+default = ["impl"]
+impl = [
+    "dep:webpage",
+    "dep:tokio",
+    "dep:url",
+    "dep:base64",
+    "dep:futures-util",
+    "dep:httpclient",
+]

@@ -1,0 +1,42 @@
+[workspace]
+members = ["crates/*"]
+exclude = ["crates/.zed", "crates-outside-workspace/rubicon-exports"]
+resolver = "3"
+
+[workspace.package]
+edition = "2024"
+rust-version = "1.85.0"
+version = "0.1.0"
+authors = ["Amos Wenger <amos@bearcove.eu>"]
+license = "Proprietary"
+repository = "https://code.bearcove.cloud/bearcove/home"
+homepage = "https://home.bearcove.eu"
+documentation = "https://home.bearcove.eu"
+description = "A cozy authoring environment"
+keywords = []
+categories = []
+
+[profile.dev]
+debug = 1
+split-debuginfo = "unpacked"
+incremental = true
+
+[profile.dev.package."*"]
+opt-level = 2
+
+[profile.release]
+debug = 1
+lto = "off"
+split-debuginfo = "unpacked"
+
+[workspace.dependencies]
+tokio = { version = "=1.44.1", features = ["full"] }
+serde = { version = "1.0.219", features = ["derive"] }
+merde = { version = "10.0.6", features = ["full"] }
+rusqlite = { version = "0.32.1", default-features = false, features = ["time"] }
+eyre = "0.6.12"
+tracing = { version = "0.1.41", default-features = false, features = ["std"] }
+minijinja = { version = "2.8.0" }
+dylo = "1"
+
+facet = { version = "0.9.6", features = ["camino"] }

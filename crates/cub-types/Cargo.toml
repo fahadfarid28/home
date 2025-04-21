@@ -1,0 +1,18 @@
+[package]
+name = "cub-types"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+config = { version = "0.1.0", path = "../config" }
+conflux = { version = "0.1.0", path = "../conflux" }
+eyre.workspace = true
+futures-core = "0.3.31"
+hattip = { version = "0.1.0", path = "../hattip" }
+mom = { version = "0.1.0", path = "../mom" }
+momclient = { version = "0.1.0", path = "../momclient" }
+objectstore = { version = "0.1.0", path = "../objectstore" }
+search = { version = "0.1.0", path = "../search" }
+template = { version = "0.1.0", path = "../template" }
+time = "0.3.41"
+websock = { version = "0.1.0", path = "../websock" }

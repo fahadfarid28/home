@@ -1,0 +1,1 @@
+{"rule":"EN_A_VS_AN","sentence":"^\\QIt's an mdbook.\\E$"}
