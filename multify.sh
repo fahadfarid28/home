@@ -33,10 +33,10 @@ fi
 echo -e "${YELLOW}📦 Getting digests and sizes...${NC}"
 
 echo -e "${BLUE}⬇️  Fetching AMD64 digest...${NC}"
-AMD64_DIGEST=$(regctl manifest head code.bearcove.cloud/bearcove/home:${AMD64_TAG} --platform linux/amd64)
+AMD64_DIGEST=$(regctl manifest head ghcr.io/bearcove/home:${AMD64_TAG} --platform linux/amd64)
 
 echo -e "${BLUE}⬇️  Fetching ARM64 digest...${NC}"
-ARM64_DIGEST=$(regctl manifest head code.bearcove.cloud/bearcove/home:${ARM64_TAG} --platform linux/arm64)
+ARM64_DIGEST=$(regctl manifest head ghcr.io/bearcove/home:${ARM64_TAG} --platform linux/arm64)
 
 # Check if ARM64_DIGEST is empty or not properly set
 if [ -z "$ARM64_DIGEST" ]; then
@@ -55,11 +55,11 @@ else
 fi
 
 echo -e "${BLUE}📏 Calculating AMD64 manifest size...${NC}"
-AMD64_SIZE=$(regctl manifest get code.bearcove.cloud/bearcove/home:${AMD64_TAG} --platform linux/amd64 --format raw-body | wc -c)
+AMD64_SIZE=$(regctl manifest get ghcr.io/bearcove/home:${AMD64_TAG} --platform linux/amd64 --format raw-body | wc -c)
 echo -e "${GREEN}✅ AMD64 size: ${AMD64_SIZE} bytes${NC}"
 
 echo -e "${BLUE}📏 Calculating ARM64 manifest size...${NC}"
-ARM64_SIZE=$(regctl manifest get code.bearcove.cloud/bearcove/home:${ARM64_TAG} --platform linux/arm64 --format raw-body | wc -c)
+ARM64_SIZE=$(regctl manifest get ghcr.io/bearcove/home:${ARM64_TAG} --platform linux/arm64 --format raw-body | wc -c)
 echo -e "${GREEN}✅ ARM64 size: ${ARM64_SIZE} bytes${NC}"
 
 echo -e "${YELLOW}📝 Creating manifest.json...${NC}"
@@ -96,7 +96,7 @@ for TAG in "${MANIFEST_TAGS[@]}"; do
   echo -e "${BLUE}📤 Pushing manifest for tag: ${TAG}${NC}"
   regctl manifest put \
     --content-type application/vnd.docker.distribution.manifest.list.v2+json \
-    code.bearcove.cloud/bearcove/home:${TAG} < manifest.json
+    ghcr.io/bearcove/home:${TAG} < manifest.json
   echo -e "${GREEN}✅ Successfully pushed manifest for tag: ${TAG}${NC}"
 done
 echo -e "${GREEN}🎉 Multi-architecture manifest(s) successfully pushed to registry!${NC}"

@@ -28,15 +28,15 @@ fi
 # Declare variables
 OCI_LAYOUT_DIR="/tmp/beardist-oci-layout"
 OUTPUT_DIR="/tmp/beardist-output"
-IMAGE_NAME="code.bearcove.cloud/bearcove/home:${TAG_VERSION}-${ARCH_NAME}"
-BASE_IMAGE="code.bearcove.cloud/bearcove/home-base:latest-${ARCH_NAME}"
+IMAGE_NAME="ghcr.io/bearcove/home:${TAG_VERSION}-${ARCH_NAME}"
+BASE_IMAGE="ghcr.io/bearcove/home-base:latest-${ARCH_NAME}"
 
 # Set the version for home-drawio
-HOME_DRAWIO_VERSION="v1.1.7"
+HOME_DRAWIO_VERSION="v1.0.1"
 
-# Check if FORGEJO_READWRITE_TOKEN is set
-if [ -z "${FORGEJO_READWRITE_TOKEN}" ]; then
-    echo -e "\033[1;31m❌ Error: FORGEJO_READWRITE_TOKEN is not set\033[0m" >&2
+# Check if GH_READWRITE_TOKEN is set
+if [ -z "${GH_READWRITE_TOKEN}" ]; then
+    echo -e "\033[1;31m❌ Error: GH_READWRITE_TOKEN is not set\033[0m" >&2
     exit 1
 fi
 
@@ -56,8 +56,8 @@ else
     exit 1
 fi
 
-curl --fail --location --retry 3 --retry-delay 5 -H "Authorization: token ${FORGEJO_READWRITE_TOKEN}" \
-    "https://code.bearcove.cloud/api/packages/bearcove/generic/home-drawio/${HOME_DRAWIO_VERSION}/${PKG_ARCH}.tar.xz" \
+curl --fail --location --retry 3 --retry-delay 5 -H "Authorization: token ${GH_READWRITE_TOKEN}" \
+    "https://github.com/bearcove/home-drawio/releases/download/${HOME_DRAWIO_VERSION}/${PKG_ARCH}.tar.xz" \
     -o "${TEMP_DIR}/home-drawio.tar.xz"
 
 # Unpack the archive directly to OUTPUT_DIR

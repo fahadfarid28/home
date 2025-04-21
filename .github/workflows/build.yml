@@ -77,8 +77,8 @@ jobs:
           if [[ "${{ github.ref }}" == refs/tags/* ]]; then
               echo "we're building a tag! "
               echo "building + pushing the container image"
-              regctl registry login code.bearcove.cloud -u token -p "${{ secrets.GH_READWRITE_TOKEN }}"
-              regctl image inspect code.bearcove.cloud/bearcove/home-base:latest
+              regctl registry login ghcr.io -u token -p "${{ secrets.GH_READWRITE_TOKEN }}"
+              regctl image inspect ghcr.io/bearcove/home-base:latest
               ./repack.sh
           fi
   trigger-formula-update:
