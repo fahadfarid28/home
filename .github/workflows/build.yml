@@ -82,4 +82,4 @@ jobs:
             -H "Accept: application/json" \
             -H "Content-Type: application/json" \
             -d '{"ref": "main", "inputs": {"repository": "'$GITHUB_REPOSITORY'"}}' \
-            https://code.bearcove.cloud/api/v1/repos/bearcove/tap/actions/workflows/bump.yml/dispatches
+            https://api.github.com/repos/bearcove/tap/actions/workflows/bump.yml/dispatches
