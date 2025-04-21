@@ -22,7 +22,7 @@ jobs:
       - name: Restore cache
         uses: actions/cache@v3
         with:
-          path: /tmp/beardist-cache
+          path: /tmp/cache
           key: ${{ runner.os }}-${{ matrix.artifact }}-home-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
             ${{ runner.os }}-${{ matrix.artifact }}-home-
