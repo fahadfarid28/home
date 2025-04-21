@@ -140,7 +140,7 @@ if [ -n "${CI:-}" ] && [ -n "${GITHUB_REF:-}" ]; then
         if [[ "$TAG" == v* ]]; then
             TAG=${TAG#v}
         fi
-        TAGGED_IMAGE_NAME="code.bearcove.cloud/bearcove/home:$TAG"
+        TAGGED_IMAGE_NAME="ghcr.io/bearcove/home:$TAG"
         echo -e "\033[1;32m🏷️ Tagging and pushing: \033[1;35m$TAGGED_IMAGE_NAME\033[0m"
         regctl image copy $IMAGE_NAME $TAGGED_IMAGE_NAME
     fi

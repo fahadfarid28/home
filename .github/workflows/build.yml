@@ -95,7 +95,7 @@ jobs:
 
       - name: Login to registry
         run: |
-          regctl registry login code.bearcove.cloud -u token -p "${{ secrets.GH_READWRITE_TOKEN }}"
+          regctl registry login ghcr.io -u token -p "${{ secrets.GH_READWRITE_TOKEN }}"
 
       - name: Create and push multi-platform manifest
         run: |

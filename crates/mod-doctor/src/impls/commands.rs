@@ -100,7 +100,7 @@ const COMMANDS_TO_CHECK: &[RequiredBin] = &[
             args: &[],
         }],
         purpose: "draw.io diagram conversion to SVG",
-        notes: "To install home-drawio, first add the bearcove tap with `brew tap bearcove/tap https://code.bearcove.cloud/bearcove/tap`, then run `brew install bearcove/tap/home-drawio`.",
+        notes: "To install home-drawio, first add the bearcove tap with `brew tap bearcove/tap https://github.com/bearcove/tap`, then run `brew install bearcove/tap/home-drawio`.",
         gravity: Gravity::Needed,
     },
 ];
