@@ -1,9 +1,0 @@
-target
-dist
-**/target/
-node_modules
-result
-.parcel-cache
-.dummy.env
-usr
-linux-mods
