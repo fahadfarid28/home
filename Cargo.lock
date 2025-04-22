@@ -4228,6 +4228,7 @@ dependencies = [
  "html-escape",
  "indicium",
  "noteyre",
+ "percent-encoding 2.3.1",
  "tantivy",
  "tracing",
 ]

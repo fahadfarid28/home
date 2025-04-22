@@ -21,6 +21,7 @@ tracing = { workspace = true, optional = true }
 dylo-runtime = "2.5.0"
 noteyre = { version = "0.1.0", path = "../noteyre" }
 config = { version = "0.1.0", path = "../config" }
+percent-encoding = "2.3.1"
 
 [features]
 default = ["impl"]

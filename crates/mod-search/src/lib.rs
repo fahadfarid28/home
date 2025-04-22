@@ -12,11 +12,11 @@ use conflux::{CompletionKind, Html, SearchResult};
 
 #[cfg(feature = "impl")]
 use tantivy::{
+    SnippetGenerator, TantivyDocument,
     collector::{Count, TopDocs},
     schema::{
-        IndexRecordOption, Schema, TextFieldIndexing, TextOptions, Value, INDEXED, STORED, TEXT,
+        INDEXED, IndexRecordOption, STORED, Schema, TEXT, TextFieldIndexing, TextOptions, Value,
     },
-    SnippetGenerator, TantivyDocument,
 };
 
 pub type Result<T, E = noteyre::BS> = std::result::Result<T, E>;
@@ -208,7 +208,34 @@ impl IndexImpl {
             let page = rev.pages.get(&doc_path).unwrap().clone();
 
             let title_snippet = title_snippet_generator.snippet(&page.title).to_html();
-            let body_snippet = body_snippet_generator.snippet(&page.plain_text).to_html();
+            let body_snippet = body_snippet_generator.snippet(&page.plain_text);
+
+            let mut fragments: Vec<String> = Vec::new();
+            for r in body_snippet.highlighted() {
+                // cf. https://developer.mozilla.org/en-US/docs/Web/URI/Reference/Fragment/Text_fragments
+                let prefix_start = r.start.saturating_sub(10);
+                let prefix_end = r.start;
+
+                let prefix = &page.plain_text[prefix_start..prefix_end];
+
+                let text = &page.plain_text[r.clone()];
+
+                let suffix_start = r.end;
+                let suffix_end = std::cmp::min(r.end + 10, page.plain_text.len());
+
+                let suffix = &page.plain_text[suffix_start..suffix_end];
+
+                let fragment = format!(
+                    "text={}-,{},-{}",
+                    fragment_urlencode(prefix.to_string()),
+                    fragment_urlencode(text.to_string()),
+                    fragment_urlencode(suffix.to_string())
+                );
+                fragments.push(fragment);
+            }
+            let fragments = format!(":~:{}", fragments.join("&"));
+
+            let body_snippet = body_snippet.to_html();
 
             tracing::debug!("title snippet = {title_snippet}");
             tracing::debug!("body snippet = {body_snippet}");
@@ -216,6 +243,7 @@ impl IndexImpl {
             results.results.push(SearchResult {
                 body_snippet: Html::new(body_snippet),
                 title_snippet: Html::new(title_snippet),
+                fragments,
                 page,
             });
         }
@@ -345,4 +373,22 @@ impl indicium::simple::Indexable for IndexableCompat {
     fn strings(&self) -> Vec<String> {
         self.0.clone()
     }
+}
+
+use percent_encoding::{AsciiSet, CONTROLS, percent_encode};
+
+// Define the custom encode set for fragments, encoding '-' and '.'
+// Standard fragment encoding doesn't encode these, but some contexts might require it.
+// See: https://url.spec.whatwg.org/#fragment-percent-encode-set
+// The default fragment encode set includes controls, space, ", <, >, `
+const FRAGMENT_ENCODE_SET_BASE: &AsciiSet =
+    &CONTROLS.add(b' ').add(b'"').add(b'<').add(b'>').add(b'`');
+
+// Add '-' and '.' to the base set for our custom fragment encoding
+const CUSTOM_FRAGMENT_ENCODE_SET: &AsciiSet = &FRAGMENT_ENCODE_SET_BASE.add(b'-').add(b'.');
+
+/// Encodes a string for use in a URL fragment (#fragment), with additional
+/// encoding for '-' and '.' characters.
+fn fragment_urlencode(input: String) -> String {
+    percent_encode(input.as_bytes(), CUSTOM_FRAGMENT_ENCODE_SET).to_string()
 }

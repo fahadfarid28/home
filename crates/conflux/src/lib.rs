@@ -1224,6 +1224,10 @@ pub struct SearchResult {
 
     /// Parts of the body that matched the query terms, highlighted, as HTML
     pub body_snippet: Html,
+
+    /// Text fragments, cf. <https://developer.mozilla.org/en-US/docs/Web/URI/Reference/Fragment/Text_fragments>
+    /// Already joined by `&` and prefixed with `:~:`, all that needs to be done is to put it after a `#`
+    pub fragments: String,
 }
 
 impl std::fmt::Debug for SearchResult {
@@ -1232,6 +1236,7 @@ impl std::fmt::Debug for SearchResult {
             .field("page", &self.page)
             .field("title_snippet", &self.title_snippet)
             .field("body_snippet", &self.body_snippet)
+            .field("fragments", &self.fragments)
             .finish()
     }
 }

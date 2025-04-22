@@ -714,6 +714,7 @@ impl minijinja::value::Object for SearchResultVal {
             "body_snippet" => {
                 minijinja::value::Value::from_safe_string(self.body_snippet.to_string())
             }
+            "fragments" => minijinja::value::Value::from_safe_string(self.fragments.clone()),
             _ => return None,
         })
     }

@@ -222,6 +222,7 @@ Properties:
 - `page` ([`LoadedPage`](#loadedpage)): The found page
 - `title_snippet` (HTML String): Highlighted title snippet
 - `body_snippet` (HTML String): Highlighted body snippet
+- `fragments` (HTML String): A [text fragment](https://developer.mozilla.org/en-US/docs/Web/URI/Reference/Fragment/Text_fragments) to put in the search result link
 
 ### Globals
 
