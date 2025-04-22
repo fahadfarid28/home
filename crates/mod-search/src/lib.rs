@@ -211,25 +211,89 @@ impl IndexImpl {
             let body_snippet = body_snippet_generator.snippet(&page.plain_text);
 
             let mut fragments: Vec<String> = Vec::new();
-            for r in body_snippet.highlighted() {
+
+            // Collapse ranges that are only 1 character apart
+            let mut collapsed_ranges = Vec::new();
+            let mut current_range: Option<std::ops::Range<usize>> = None;
+
+            for range in body_snippet.highlighted() {
+                if let Some(ref mut curr) = current_range {
+                    // If current range end is adjacent or 1 char from this range's start
+                    if curr.end + 1 >= range.start {
+                        // Extend current range to include this one
+                        curr.end = range.end;
+                    } else {
+                        // Push current range and start a new one
+                        collapsed_ranges.push(curr.clone());
+                        current_range = Some(range.clone());
+                    }
+                } else {
+                    // First range
+                    current_range = Some(range.clone());
+                }
+            }
+
+            // Don't forget to add the last range if there is one
+            if let Some(curr) = current_range {
+                collapsed_ranges.push(curr);
+            }
+
+            // Use collapsed ranges instead of original ranges
+            for r in &collapsed_ranges {
+                eprintln!("Dealing with range {:?}", r);
+
                 // cf. https://developer.mozilla.org/en-US/docs/Web/URI/Reference/Fragment/Text_fragments
-                let prefix_start = r.start.saturating_sub(10);
+
+                // Navigate 10 characters backwards from the start position
+                let mut prefix_start_idx = r.start;
+                let mut char_count = 0;
+                while prefix_start_idx > 0 && char_count < 10 {
+                    // Check if current position is a char boundary before moving
+                    // If not, keep moving until we find one
+                    if body_snippet
+                        .fragment()
+                        .is_char_boundary(prefix_start_idx - 1)
+                    {
+                        prefix_start_idx -= 1;
+                        char_count += 1;
+                    } else if prefix_start_idx > 1 {
+                        prefix_start_idx -= 1;
+                    } else {
+                        // We've reached the beginning of the string
+                        break;
+                    }
+                }
+
                 let prefix_end = r.start;
 
-                let prefix = &page.plain_text[prefix_start..prefix_end];
+                // Extract prefix from fragment
+                let prefix = &body_snippet.fragment()[prefix_start_idx..prefix_end];
 
-                let text = &page.plain_text[r.clone()];
+                let text = &body_snippet.fragment()[r.clone()];
 
+                // Navigate 10 characters forward from the end position
                 let suffix_start = r.end;
-                let suffix_end = std::cmp::min(r.end + 10, page.plain_text.len());
+                let mut suffix_end_idx = r.end;
+                let mut char_count = 0;
+                while suffix_end_idx < body_snippet.fragment().len() && char_count < 10 {
+                    let next_idx = suffix_end_idx + 1;
+                    if next_idx <= body_snippet.fragment().len()
+                        && body_snippet.fragment().is_char_boundary(next_idx)
+                    {
+                        char_count += 1;
+                    }
+                    suffix_end_idx = next_idx;
+                }
 
-                let suffix = &page.plain_text[suffix_start..suffix_end];
+                // Extract suffix from fragment, ensuring we don't go past the end
+                let suffix_end = std::cmp::min(suffix_end_idx, body_snippet.fragment().len());
+                let suffix = &body_snippet.fragment()[suffix_start..suffix_end];
 
                 let fragment = format!(
                     "text={}-,{},-{}",
-                    fragment_urlencode(prefix.to_string()),
-                    fragment_urlencode(text.to_string()),
-                    fragment_urlencode(suffix.to_string())
+                    fragment_urlencode(prefix.trim().as_bytes()),
+                    fragment_urlencode(text.trim().as_bytes()),
+                    fragment_urlencode(suffix.trim().as_bytes())
                 );
                 fragments.push(fragment);
             }
@@ -384,11 +448,34 @@ use percent_encoding::{AsciiSet, CONTROLS, percent_encode};
 const FRAGMENT_ENCODE_SET_BASE: &AsciiSet =
     &CONTROLS.add(b' ').add(b'"').add(b'<').add(b'>').add(b'`');
 
-// Add '-' and '.' to the base set for our custom fragment encoding
-const CUSTOM_FRAGMENT_ENCODE_SET: &AsciiSet = &FRAGMENT_ENCODE_SET_BASE.add(b'-').add(b'.');
+// Add all special characters needed for text fragments
+// These include:
+// - Text fragment control characters: '-', ',', ':', '='
+// - URL control characters: '#', '&'
+// - Unsafe characters: quotes, brackets, etc.
+const CUSTOM_FRAGMENT_ENCODE_SET: &AsciiSet = &FRAGMENT_ENCODE_SET_BASE
+    .add(b'-')
+    .add(b',')
+    .add(b':')
+    .add(b'=')
+    .add(b'#')
+    .add(b'&')
+    .add(b'\'')
+    .add(b'"')
+    .add(b'<')
+    .add(b'>')
+    .add(b'{')
+    .add(b'}')
+    .add(b'|')
+    .add(b'\\')
+    .add(b'^')
+    .add(b'~')
+    .add(b'[')
+    .add(b']')
+    .add(b'.');
 
 /// Encodes a string for use in a URL fragment (#fragment), with additional
 /// encoding for '-' and '.' characters.
-fn fragment_urlencode(input: String) -> String {
-    percent_encode(input.as_bytes(), CUSTOM_FRAGMENT_ENCODE_SET).to_string()
+fn fragment_urlencode(input: &[u8]) -> String {
+    percent_encode(input, CUSTOM_FRAGMENT_ENCODE_SET).to_string()
 }
