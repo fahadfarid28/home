@@ -102,7 +102,7 @@ jobs:
           ./multify.sh
 
       - name: Trigger formula update
-        uses: peter-evans/repository-dispatch@7d980a9
+        uses: peter-evans/repository-dispatch@7d980a9b9f8ecf8955ea90507b3ed89122f53215
         with:
           token: ${{ env.GH_READWRITE_TOKEN }}
           repository: bearcove/homebrew-tap
