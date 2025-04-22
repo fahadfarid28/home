@@ -238,63 +238,91 @@ impl IndexImpl {
                 collapsed_ranges.push(curr);
             }
 
+            // Find and collect all word boundaries in the body text
+            // This will be used for highlighting in the UI
+            let mut word_boundaries = Vec::new();
+            let mut in_word = false;
+
+            for (idx, c) in body_snippet.fragment().char_indices() {
+                // Check if character is a word boundary
+                if c.is_whitespace() || c.is_ascii_punctuation() {
+                    if in_word {
+                        // Transition from word to non-word
+                        word_boundaries.push(idx);
+                        in_word = false;
+                    }
+                } else if !in_word {
+                    // Transition from non-word to word
+                    word_boundaries.push(idx);
+                    in_word = true;
+                }
+            }
+
+            // Add the end of text as a boundary if needed
+            if !body_snippet.fragment().is_empty() {
+                word_boundaries.push(body_snippet.fragment().len());
+            }
+
+            tracing::debug!("Found {} word boundaries", word_boundaries.len());
+
             // Use collapsed ranges instead of original ranges
             for r in &collapsed_ranges {
-                eprintln!("Dealing with range {:?}", r);
+                tracing::debug!("Dealing with range {:?}", r);
+                tracing::debug!("Using word_boundaries to find two words before");
 
-                // cf. https://developer.mozilla.org/en-US/docs/Web/URI/Reference/Fragment/Text_fragments
+                // Find two words before the highlighted range
+                let mut prefix_start_idx = 0;
+                let prefix_end = r.start;
+                let mut second_last_boundary = 0;
 
-                // Navigate 10 characters backwards from the start position
-                let mut prefix_start_idx = r.start;
-                let mut char_count = 0;
-                while prefix_start_idx > 0 && char_count < 10 {
-                    // Check if current position is a char boundary before moving
-                    // If not, keep moving until we find one
-                    if body_snippet
-                        .fragment()
-                        .is_char_boundary(prefix_start_idx - 1)
-                    {
-                        prefix_start_idx -= 1;
-                        char_count += 1;
-                    } else if prefix_start_idx > 1 {
-                        prefix_start_idx -= 1;
+                tracing::debug!(
+                    "Finding two words before the highlighted range that starts at {}",
+                    r.start
+                );
+
+                // Find the second largest word boundary that is less than r.start
+                for (i, &boundary) in word_boundaries.iter().enumerate() {
+                    if boundary < r.start {
+                        second_last_boundary = prefix_start_idx;
+                        prefix_start_idx = boundary;
+                        tracing::debug!(
+                            "Found boundaries: second last = {}, last = {}",
+                            second_last_boundary,
+                            prefix_start_idx
+                        );
                     } else {
-                        // We've reached the beginning of the string
+                        tracing::debug!("Stopping at boundary {} since it's >= r.start", boundary);
                         break;
                     }
                 }
 
-                let prefix_end = r.start;
+                // Use the second last boundary as our start point
+                if second_last_boundary > 0 {
+                    prefix_start_idx = second_last_boundary;
+                }
+
+                tracing::debug!("Selected prefix_start_idx = {}", prefix_start_idx);
+
+                // Extract highlighted text
+                let text = &body_snippet.fragment()[r.clone()];
+                tracing::debug!("Highlighted text: '{}'", text);
 
                 // Extract prefix from fragment
                 let prefix = &body_snippet.fragment()[prefix_start_idx..prefix_end];
 
-                let text = &body_snippet.fragment()[r.clone()];
-
-                // Navigate 10 characters forward from the end position
-                let suffix_start = r.end;
-                let mut suffix_end_idx = r.end;
-                let mut char_count = 0;
-                while suffix_end_idx < body_snippet.fragment().len() && char_count < 10 {
-                    let next_idx = suffix_end_idx + 1;
-                    if next_idx <= body_snippet.fragment().len()
-                        && body_snippet.fragment().is_char_boundary(next_idx)
-                    {
-                        char_count += 1;
-                    }
-                    suffix_end_idx = next_idx;
-                }
-
-                // Extract suffix from fragment, ensuring we don't go past the end
-                let suffix_end = std::cmp::min(suffix_end_idx, body_snippet.fragment().len());
-                let suffix = &body_snippet.fragment()[suffix_start..suffix_end];
+                // Debug print fragments and their components
+                tracing::debug!(
+                    "Fragment parts: prefix='{}' text='{}'",
+                    prefix.trim(),
+                    text.trim()
+                );
 
                 let fragment = format!(
-                    "text={}-,{},-{}",
+                    "text={}-,{}",
                     fragment_urlencode(prefix.trim().as_bytes()),
-                    fragment_urlencode(text.trim().as_bytes()),
-                    fragment_urlencode(suffix.trim().as_bytes())
+                    fragment_urlencode(text.trim().as_bytes())
                 );
+                tracing::debug!("Created fragment: {}", fragment);
                 fragments.push(fragment);
             }
             let fragments = format!(":~:{}", fragments.join("&"));
