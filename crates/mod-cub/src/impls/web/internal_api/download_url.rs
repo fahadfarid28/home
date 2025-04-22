@@ -1,3 +1,4 @@
+use axum::response::IntoResponse as _;
 use config::is_development;
 use http::{StatusCode, Uri};
 use std::collections::HashMap;
@@ -58,21 +59,18 @@ pub(crate) async fn download_url(
         }
     };
 
-    let resp = axum::response::Response::builder()
-        .header(http::header::CONTENT_TYPE, content_type)
-        .header(http::header::ACCESS_CONTROL_ALLOW_ORIGIN, "*")
-        .header(
-            http::header::ACCESS_CONTROL_ALLOW_METHODS,
-            "GET, POST, OPTIONS",
-        )
-        .header(http::header::ACCESS_CONTROL_ALLOW_HEADERS, "Content-Type");
+    let resp = (
+        [
+            (http::header::CONTENT_TYPE, content_type.as_str()),
+            (http::header::ACCESS_CONTROL_ALLOW_ORIGIN, "*"),
+            (
+                http::header::ACCESS_CONTROL_ALLOW_METHODS,
+                "GET, POST, OPTIONS",
+            ),
+            (http::header::ACCESS_CONTROL_ALLOW_HEADERS, "Content-Type"),
+        ],
+        body,
+    );
 
-    match resp.body(axum::body::Body::from(body)) {
-        Ok(response) => Ok(response),
-        Err(e) => LegacyHttpError::with_status(
-            StatusCode::INTERNAL_SERVER_ERROR,
-            format!("Failed to construct response: {}", e),
-        )
-        .into_legacy_reply(),
-    }
+    Ok(resp.into_response())
 }

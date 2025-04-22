@@ -2,7 +2,8 @@ use std::task::{Context, Poll};
 
 use axum::{
     body::Body,
-    http::{Request, Response, StatusCode},
+    http::{Request, Response},
+    response::IntoResponse as _,
 };
 use tower::{Layer, Service};
 
@@ -58,11 +59,8 @@ where
                     global_state().build_redirect_url(&target_domain, req.uri(), &host.0);
 
                 // Create temporary redirect response (307)
-                let response = Response::builder()
-                    .status(StatusCode::TEMPORARY_REDIRECT)
-                    .header("Location", redirect_url.as_str())
-                    .body(Body::empty())
-                    .unwrap();
+                let response =
+                    axum::response::Redirect::temporary(redirect_url.as_str()).into_response();
 
                 tracing::info!("Redirecting {} to {}", domain, redirect_url);
                 Box::pin(async move { Ok(response) })
