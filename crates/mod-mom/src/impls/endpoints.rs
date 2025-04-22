@@ -58,10 +58,7 @@ pub(super) async fn serve(listener: tokio::net::TcpListener) -> Result<()> {
                                 let req = axum::http::Request::from_parts(parts, body);
                                 next.run(req).await
                             },
-                            _ => axum::http::Response::builder()
-                                .status(axum::http::StatusCode::UNAUTHORIZED)
-                                .body(axum::body::Body::empty())
-                                .unwrap(),
+                            _ => axum::http::StatusCode::UNAUTHORIZED.into_response(),
                         }
 
                     }
@@ -94,10 +91,7 @@ pub(super) async fn serve(listener: tokio::net::TcpListener) -> Result<()> {
                             next.run(req).await
                         },
                         None => {
-                            axum::http::Response::builder()
-                            .status(axum::http::StatusCode::UNAUTHORIZED)
-                            .body(axum::body::Body::empty())
-                            .unwrap()
+                            axum::http::StatusCode::UNAUTHORIZED.into_response()
                         }
                     }
                 }

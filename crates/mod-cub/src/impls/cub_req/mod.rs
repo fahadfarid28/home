@@ -9,6 +9,7 @@ use axum::{
     body::Bytes,
     extract::FromRequestParts,
     http::{StatusCode, header, request::Parts},
+    response::IntoResponse as _,
 };
 use config::{Environment, WebConfig};
 use conflux::{AccessOverride, CacheBuster, InputPathRef, LoadedPage, Route, Viewer};
@@ -124,11 +125,14 @@ where
                 } else {
                     "tenant_not_found".to_string()
                 };
-                let resp = axum::response::Response::builder()
-                    .status(StatusCode::BAD_REQUEST)
-                    .header(header::CONTENT_TYPE, "text/html; charset=utf-8");
+
+                let resp = (
+                    StatusCode::BAD_REQUEST,
+                    [(header::CONTENT_TYPE, "text/html; charset=utf-8")],
+                    msg,
+                );
                 // lol
-                return Err(Ok(resp.body(axum::body::Body::from(msg)).unwrap()));
+                return Err(Ok(resp.into_response()));
             }
         };
 
