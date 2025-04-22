@@ -39,19 +39,19 @@ Then welcome home!
 
 ## Keeping home updated
 
-When a new version of home comes out, it's tagged on <https://code.bearcove.cloud/bearcove/home/tags>
+When a new version of home comes out, it's tagged on <https://github.com/bearcove/home/releases>
 
-Shortly after, a [CI workflow / action](https://code.bearcove.cloud/bearcove/home/actions) updates
-the [bearcove tap](https://code.bearcove.cloud/bearcove/tap) repository — its commit list shows
+Shortly after, a [CI workflow / action](https://github.com/bearcove/home/actions) updates
+the [bearcove tap](https://github.com/bearcove/homebrew-tap) repository — its commit list shows
 that it's all happening automatically:
 
 +++
 :figure:
     src: bearcove-tap-commits@2x.jxl
     title: |
-        Automation goes brrrr
+        Automation goes brrrr 
     alt: |
-        A screenshot of the ForgeJo bearcove/tap repository showing commits made a few minutes distant from each other.
+        A screenshot of the GitHub bearcove/tap repository showing commits made a few minutes distant from each other. 
 +++
 
 ## Serving an existing home site
