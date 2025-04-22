@@ -109,9 +109,7 @@ jobs:
             -H "X-GitHub-Api-Version: 2022-11-28" \
             -d '{
               "ref": "main",
-              "inputs": {
-                "repository": "${{ github.repository }}"
-              }
+              "inputs": {}
             }' \
             https://api.github.com/repos/bearcove/homebrew-tap/actions/workflows/bump.yml/dispatches
 
@@ -133,8 +131,6 @@ jobs:
             -H "X-GitHub-Api-Version: 2022-11-28" \
             -d '{
               "ref": "main",
-              "inputs": {
-                "repository": "${{ github.repository }}"
-              }
+              "inputs": {}
             }' \
             https://api.github.com/repos/bearcove/homebrew-tap/actions/workflows/bump.yml/dispatches
