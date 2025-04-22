@@ -102,10 +102,11 @@ jobs:
           ./multify.sh
 
       - name: Trigger formula update
-        run: |
-          curl -f -X POST \
-            -H "Authorization: token $GH_READWRITE_TOKEN" \
-            -H "Accept: application/json" \
-            -H "Content-Type: application/json" \
-            -d '{"ref": "main", "inputs": {"repository": "'$GITHUB_REPOSITORY'"}}' \
-            https://api.github.com/repos/bearcove/homebrew-tap/actions/workflows/bump.yml/dispatches
+        uses: peter-evans/repository-dispatch@7d980a9
+        with:
+          token: ${{ env.GH_READWRITE_TOKEN }}
+          repository: bearcove/homebrew-tap
+          event-type: bump
+          workflow: bump.yml
+          ref: main
+          client-payload: '{"repository": "${{ github.repository }}"}'
