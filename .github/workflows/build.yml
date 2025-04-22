@@ -116,7 +116,6 @@ jobs:
             https://api.github.com/repos/bearcove/homebrew-tap/actions/workflows/bump.yml/dispatches
 
   trigger-formula-update-test:
-    if: startsWith(github.ref, 'refs/tags/')
     runs-on: depot-ubuntu-24.04-4
     container:
       image: ghcr.io/bearcove/beardist:latest
