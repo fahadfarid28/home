@@ -281,7 +281,7 @@ impl IndexImpl {
                 );
 
                 // Find the second largest word boundary that is less than r.start
-                for (i, &boundary) in word_boundaries.iter().enumerate() {
+                for &boundary in word_boundaries.iter() {
                     if boundary < r.start {
                         second_last_boundary = prefix_start_idx;
                         prefix_start_idx = boundary;
