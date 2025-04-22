@@ -20,6 +20,24 @@ fn urlencode(input: String) -> String {
     urlencoding::encode(&input).to_string()
 }
 
+use percent_encoding::{AsciiSet, CONTROLS, percent_encode};
+
+// Define the custom encode set for fragments, encoding '-' and '.'
+// Standard fragment encoding doesn't encode these, but some contexts might require it.
+// See: https://url.spec.whatwg.org/#fragment-percent-encode-set
+// The default fragment encode set includes controls, space, ", <, >, `
+const FRAGMENT_ENCODE_SET_BASE: &AsciiSet =
+    &CONTROLS.add(b' ').add(b'"').add(b'<').add(b'>').add(b'`');
+
+// Add '-' and '.' to the base set for our custom fragment encoding
+const CUSTOM_FRAGMENT_ENCODE_SET: &AsciiSet = &FRAGMENT_ENCODE_SET_BASE.add(b'-').add(b'.');
+
+/// Encodes a string for use in a URL fragment (#fragment), with additional
+/// encoding for '-' and '.' characters.
+fn fragment_urlencode(input: String) -> String {
+    percent_encode(input.as_bytes(), CUSTOM_FRAGMENT_ENCODE_SET).to_string()
+}
+
 fn shuffle(mut input: Vec<Value>) -> Result<Vec<Value>, Error> {
     input.shuffle(&mut rand::thread_rng());
     Ok(input)
@@ -474,6 +492,7 @@ pub(crate) fn register_all(environment: &mut Environment<'static>) {
     environment.add_filter("downcase", downcase);
     environment.add_filter("shuffle", shuffle);
     environment.add_filter("urlencode", urlencode);
+    environment.add_filter("fragment_urlencode", fragment_urlencode);
     environment.add_filter("to_json", to_json);
     environment.add_filter("basic_markdown", basic_markdown);
     environment.add_filter("escape_for_attribute", escape_for_attribute);
@@ -485,4 +504,54 @@ pub(crate) fn register_all(environment: &mut Environment<'static>) {
     environment.add_filter("is_future", is_future);
 
     environment.set_unknown_method_callback(unknown_method_callback);
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_urlencode_vs_fragment_urlencode() {
+        let input = " unsafe code. There’s no such thing as “two Rusts”,".to_string();
+
+        let urlencoded = urlencode(input.clone());
+        let fragment_urlencoded = fragment_urlencode(input.clone());
+
+        // Standard urlencoding (like x-www-form-urlencoded) encodes spaces, quotes, comma, etc.
+        // but typically leaves '.' unencoded.
+        let expected_urlencode = "%20unsafe%20code.%20There%E2%80%99s%20no%20such%20thing%20as%20%E2%80%9Ctwo%20Rusts%E2%80%9D%2C";
+        assert_eq!(urlencoded, expected_urlencode);
+
+        // Fragment urlencoding encodes fewer characters by default, but our custom set adds '.'
+        // Note: It also percent-encodes characters like `’`, `“`, `”` because they are outside the ASCII range allowed by the spec.
+        let expected_fragment_urlencode = "%20unsafe%20code%2E%20There%E2%80%99s%20no%20such%20thing%20as%20%E2%80%9Ctwo%20Rusts%E2%80%9D%2C";
+        assert_eq!(fragment_urlencoded, expected_fragment_urlencode);
+
+        // The key difference in this case is the encoding of '.'
+        assert_ne!(urlencoded, fragment_urlencoded);
+    }
+
+    #[test]
+    fn test_fragment_urlencode_handles_dash() {
+        let input = "section-1.2-heading".to_string();
+        let fragment_urlencoded = fragment_urlencode(input);
+        // '-' should be encoded as %2D, '.' as %2E
+        assert_eq!(fragment_urlencoded, "section%2D1%2E2%2Dheading");
+
+        // Standard urlencode would not encode '-' or '.'
+        let urlencoded = urlencode("section-1.2-heading".to_string());
+        assert_eq!(urlencoded, "section-1.2-heading");
+    }
+
+    #[test]
+    fn test_fragment_urlencode_other_chars() {
+        // Characters included in FRAGMENT_ENCODE_SET_BASE
+        let input = "a b\"c<d>e`f".to_string();
+        let fragment_urlencoded = fragment_urlencode(input);
+        assert_eq!(fragment_urlencoded, "a%20b%22c%3Cd%3Ee%60f");
+
+        // Standard urlencode encodes space, " but not < > `
+        let urlencoded = urlencode("a b\"c<d>e`f".to_string());
+        assert_eq!(urlencoded, "a%20b%22c%3Cd%3Ee%60f"); // urlencoding::encode does encode these
+    }
 }

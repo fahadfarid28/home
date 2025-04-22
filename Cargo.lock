@@ -4281,6 +4281,7 @@ dependencies = [
  "minijinja",
  "mom",
  "noteyre",
+ "percent-encoding 2.3.1",
  "rand 0.8.5",
  "search",
  "serde_json",
