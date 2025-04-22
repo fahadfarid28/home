@@ -1,0 +1,5 @@
+<p>
+{%- set title_attr = title | escape_for_attribute -%}
+{%- set alt_attr = alt | escape_for_attribute -%}
+{{- get_media(src).markup(title=title_attr, alt=alt_attr, width=width, height=height, class=class) -}}
+</p>

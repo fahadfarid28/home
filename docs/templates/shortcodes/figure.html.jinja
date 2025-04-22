@@ -1,0 +1,14 @@
+<figure>
+{%- set title_attr = title | escape_for_attribute -%}
+{%- set alt_attr = alt | escape_for_attribute -%}
+{{- get_media(src).markup(title=title_attr, alt=alt_attr, width=width, height=height, class=class) -}}
+<figcaption>
+{{ title | basic_markdown | safe }}
+{%- if attr -%}
+<cite>
+{%- if attrlink -%}<a href="{{ attrlink }}">{{ attr }}</a>{%- else -%}{{ attr }}{%- endif -%}
+</cite>
+{%- endif -%}
+</figcaption>
+</figcaption>
+</figure>

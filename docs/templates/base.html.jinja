@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% set favicon_media = get_media("/content/img/favicon.jxl") %}
+    <link rel="icon" type="image/jxl" href="{{ favicon_media.bitmap_variant_url("jxl") }}">
+    <link rel="icon" type="image/webp" href="{{ favicon_media.bitmap_variant_url("webp") }}">
+    <link rel="icon" type="image/avif" href="{{ favicon_media.bitmap_variant_url("avif") }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page.title }}</title>
+    <style>
+        {% include "main-style.css" %}
+    </style>
+</head>
+<body>
+  <main class="content">
+    {% block content %}
+    <style>
+    .boring-content {
+        padding: 2em;
+        max-width: 720px;
+        margin: 0 auto;
+    }
+    </style>
+    <div class="boring-content">
+        {{ page.html | safe }}
+    </div>
+    {% endblock %}
+  </main>
+</body>
+</html>

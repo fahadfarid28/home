@@ -11,4 +11,5 @@ result
 /linux-mods
 .aider*
 .env
+.envrc
 .home

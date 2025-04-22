@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+@view-transition {
+    navigation: auto;
+}
+</style>
+<div class="docs-container content">
+    {% macro nav_link(href, title, level=2) %}
+    <li><a href="{{ href | safe }}" {% if page.route == href %}class="active"{% endif %}><h{{ level }}>{{ title }}</h{{ level }}></a></li>
+        {% endmacro %}
+
+    <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+        <symbol id="menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+        </symbol>
+    </svg>
+    <button class="nav-toggle left-toggle" onclick="document.querySelector('.left-nav').classList.toggle('active')">
+        <svg width="24" height="24">
+            <use href="#menu-icon"></use>
+        </svg>
+    </button>
+    <button class="nav-toggle right-toggle" onclick="document.querySelector('.right-nav').classList.toggle('active')">
+        <svg width="24" height="24">
+            <use href="#menu-icon"></use>
+        </svg>
+    </button>
+
+    <nav class="side-nav left-nav">
+        <div class="side-nav-inner">
+            <ul>
+                {% set index_page = get_page_from_route("/") %}
+                {{ nav_link(index_page.route, index_page.title, 1) }}
+
+                {% set pages = index_page.get_children() %}
+                {% set pages = pages|sort(attribute='date') %}
+                {% for page in pages %}
+                {% if '/_' not in page.route %}
+                {{ nav_link(page.route, page.title, 2) }}
+                {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <span id="we-need-to-go-back-marty"></span>
+
+        <h1>{{ page.title }}</h1>
+
+        {{ page.html | safe }}
+    </main>
+
+    <nav class="side-nav right-nav">
+        <div class="side-nav-inner">
+            <ul>
+                <li>
+                    <a href="#we-need-to-go-back-marty" class="toc-entry">
+                        <h1>Contents</h1>
+                    </a>
+                </li>
+                    {% for entry in page.toc %}
+                <li>
+                    <a class="toc-entry" href="#{{ entry.slug }}">
+                        {% if entry.level == 1 %}
+                        <h1>{{ entry.text }}</h1>
+                        {% elif entry.level == 2 %}
+                        <h2>{{ entry.text }}</h2>
+                        {% elif entry.level == 3 %}
+                        <h3>{{ entry.text }}</h3>
+                        {% else %}
+                        <h4>{{ entry.text }}</h4>
+                            {% endif %}
+                    </a>
+                </li>
+                    {% endfor %}
+            </ul>
+        </div>
+    </nav>
+</div>
+{% endblock %}
