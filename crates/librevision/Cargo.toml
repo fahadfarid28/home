@@ -18,7 +18,7 @@ derivations = { version = "0.1.0", path = "../derivations" }
 liberrhandling = { version = "0.1.0", path = "../liberrhandling" }
 eyre.workspace = true
 facet-json = "0.16.0"
-facet-pretty = "0.15.0"
+facet-pretty = "0.16.0"
 libfs = { version = "0.1.0", path = "../libfs" }
 futures-core = "0.3.31"
 libimage = { version = "0.1.0", path = "../libimage" }

@@ -5,7 +5,7 @@ resolver = "3"
 
 [workspace.package]
 edition = "2024"
-rust-version = "1.85.0"
+rust-version = "1.86.0"
 version = "0.1.0"
 authors = ["Amos Wenger <amos@bearcove.eu>"]
 license = "Proprietary"
@@ -40,9 +40,3 @@ minijinja = { version = "2.8.0" }
 reqwest = { version = "0.12.15", default-features = false, features = [
     "rustls-tls-native-roots",
 ] }
-
-facet = { version = "0.1.0", features = ["camino"] }
-facet-core = "0.11.4"
-facet-json = "0.11.4"
-facet-pretty = "0.13.3"
-facet-reflect = "0.10.8"

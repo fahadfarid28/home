@@ -13,7 +13,7 @@ keywords.workspace = true
 categories.workspace = true
 
 [dependencies]
-facet.workspace = true
+facet = "0.16.0"
 merde.workspace = true
 plait = { version = "0.1.0", path = "../plait" }
 rusqlite.workspace = true
