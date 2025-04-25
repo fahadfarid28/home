@@ -18,7 +18,7 @@ base64 = "0.22.1"
 serde_json = { version = "1.0.140" }
 owo-colors = { version = "4.2.0" }
 facet.workspace = true
-facet-json = "0.12.1"
+facet-json = "0.16.0"
 facet-pretty = "0.15.0"
 autotrait = "0.1.11"
 eyre.workspace = true
