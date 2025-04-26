@@ -4,6 +4,8 @@ use crate::impls::{
     reply::{IntoLegacyReply, LegacyReply},
 };
 use axum::{Form, Router, response::Redirect, routing::get};
+use config_types::is_development;
+use credentials::UserInfo;
 use cub_types::{CubReq, CubTenant};
 use libgithub::GitHubLoginPurpose;
 use libpatreon::PatreonCallbackArgs;
@@ -15,6 +17,7 @@ use tracing::info;
 pub(crate) fn login_routes() -> Router {
     Router::new()
         .route("/", get(serve_login))
+        .route("/for-dev", get(serve_login_for_dev))
         .route("/patreon", get(serve_login_with_patreon))
         .route("/patreon/callback", get(serve_patreon_callback))
         .route("/github", get(serve_login_with_github))
@@ -187,4 +190,46 @@ pub(crate) async fn serve_debug_credentials(tr: CubReqImpl) -> LegacyReply {
     }
 
     text.into_legacy_reply()
+}
+
+async fn serve_login_for_dev(tr: CubReqImpl) -> LegacyReply {
+    if !is_development() {
+        // we'd return a 404 but this is open-source so.. feels unnecessary
+        return axum::http::StatusCode::UNAUTHORIZED.into_legacy_reply();
+    }
+
+    let rev = tr.tenant.rev()?;
+    let patreon_id = rev.rev.pak.rc.admin_patreon_ids.first().cloned();
+    let github_id = rev.rev.pak.rc.admin_github_ids.first().cloned();
+
+    let profile = credentials::Profile {
+        patreon_id,
+        github_id,
+        full_name: "Admin (Dev)".to_string(),
+        thumb_url: "https://placehold.co/32".to_string(), // Placeholder URL
+    };
+
+    let user_info = UserInfo {
+        profile,
+        tier: None,
+    };
+
+    // Dev logins shouldn't expire for a while
+    let expires_at = merde::time::Rfc3339(OffsetDateTime::now_utc() + time::Duration::weeks(52));
+
+    let auth_bundle = AuthBundle {
+        user_info,
+        expires_at,
+    };
+
+    let session_cookie = auth_bundle_as_cookie(&auth_bundle);
+    tr.cookies.add(session_cookie);
+    {
+        let mut just_logged_in_cookie = Cookie::new("just_logged_in", "1");
+        just_logged_in_cookie.set_path("/");
+        tr.cookies.add(just_logged_in_cookie);
+    }
+
+    // Don't use return_to for dev login, just go home
+    Redirect::to("/").into_legacy_reply()
 }
