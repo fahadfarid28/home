@@ -3272,6 +3272,7 @@ name = "libimage"
 version = "0.1.0"
 dependencies = [
  "autotrait",
+ "eyre",
  "fs-err",
  "image",
  "image-types",

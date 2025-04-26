@@ -1,5 +1,5 @@
 use autotrait::autotrait;
-// use eyre::Context;
+use eyre::Context;
 use image_types::{ICodec, IntrinsicPixels};
 use std::{io::Write, time::Instant};
 
@@ -15,61 +15,7 @@ pub fn load() -> &'static dyn Mod {
     &MOD
 }
 
-pub type Result<T, E = Report> = std::result::Result<T, E>;
-
-/////////// mini-eyre starts
-#[derive(Debug)]
-pub struct Report {
-    error: String,
-}
-
-impl std::fmt::Display for Report {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.error)
-    }
-}
-
-// Allow converting any error type that implements Display into our Report
-impl<E: std::error::Error> From<E> for Report {
-    fn from(error: E) -> Self {
-        Report {
-            error: error.to_string(),
-        }
-    }
-}
-
-#[macro_export]
-macro_rules! eyre {
-        ($($tt:tt)*) => {
-            Report {
-                error: format!($($tt)*),
-            }
-        };
-    }
-
-use std::fmt::Display;
-
-pub trait Context<T, E> {
-    fn wrap_err<D>(self, context: D) -> Result<T>
-    where
-        D: Display;
-}
-
-impl<T, E> Context<T, E> for std::result::Result<T, E>
-where
-    E: Display,
-{
-    fn wrap_err<D>(self, context: D) -> Result<T>
-    where
-        D: Display,
-    {
-        self.map_err(|e| Report {
-            error: format!("{context}: {e}"),
-        })
-    }
-}
-
-/////////// mini-eyre ends
+pub type Result<T, E = eyre::Report> = std::result::Result<T, E>;
 
 #[autotrait]
 impl Mod for ModImpl {
@@ -85,20 +31,20 @@ impl Mod for ModImpl {
         // Load the image from the input bytes
         let mut img = match ifmt {
             ICodec::PNG => image::load_from_memory_with_format(input, image::ImageFormat::Png)
-                .map_err(|e| eyre!("{}", e))?,
+                .wrap_err("Failed to decode PNG image")?,
             ICodec::JPG => image::load_from_memory_with_format(input, image::ImageFormat::Jpeg)
-                .map_err(|e| eyre!("{}", e))?,
+                .wrap_err("Failed to decode JPG image")?,
             ICodec::WEBP => image::load_from_memory_with_format(input, image::ImageFormat::WebP)
-                .map_err(|e| eyre!("{}", e))?,
+                .wrap_err("Failed to decode WEBP image")?,
             ICodec::AVIF => image::load_from_memory_with_format(input, image::ImageFormat::Avif)
-                .map_err(|e| eyre!("{}", e))?,
+                .wrap_err("Failed to decode AVIF image")?,
             ICodec::JXL => {
                 let image = JxlImage::builder()
                     .read(input)
-                    .map_err(|e| eyre!("jxl decoding error: {e}"))?;
+                    .map_err(|e| eyre::eyre!("jxl decoding error: {}", e))?;
                 let fb = image
                     .render_frame(0)
-                    .map_err(|e| eyre!("jxl rendering error: {e}"))?
+                    .map_err(|e| eyre::eyre!("jxl rendering error: {}", e))?
                     .image();
                 match fb.channels() {
                     3 => DynamicImage::from(
@@ -108,7 +54,7 @@ impl Mod for ModImpl {
                             fb.buf().to_vec(),
                         )
                         .ok_or_else(|| {
-                            eyre!("failed to create ImageBuffer from jxl frame (RGB)")
+                            eyre::eyre!("failed to create ImageBuffer from jxl frame (RGB)")
                         })?,
                     ),
                     4 => DynamicImage::from(
@@ -118,7 +64,7 @@ impl Mod for ModImpl {
                             fb.buf().to_vec(),
                         )
                         .ok_or_else(|| {
-                            eyre!("failed to create ImageBuffer from jxl frame (RGBA)")
+                            eyre::eyre!("failed to create ImageBuffer from jxl frame (RGBA)")
                         })?,
                     ),
                     _ => {
@@ -130,34 +76,36 @@ impl Mod for ModImpl {
                 }
             }
             ICodec::HEIC => {
-                let temp_heic = tempfile::NamedTempFile::new()
-                    .map_err(|e| eyre!("{}", e))
-                    .and_then(|mut f| f.write_all(input).map_err(|e| eyre!("{}", e)).map(|_| f))
-                    .map_err(|e| {
-                        eyre!("failed to create or write temporary file for HEIC input: {e}")
-                    })?;
+                let mut temp_heic = tempfile::NamedTempFile::new()
+                    .wrap_err("failed to create temporary file for HEIC input")?;
+                temp_heic
+                    .write_all(input)
+                    .wrap_err("failed to write to HEIC temporary file")?;
                 let temp_png = tempfile::NamedTempFile::new()
-                    .map_err(|e| eyre!("failed to create temporary file for HEIC output: {e}"))?;
+                    .wrap_err("failed to create temporary file for HEIC output")?;
                 let temp_png_path = temp_png
                     .path()
                     .to_str()
-                    .ok_or_else(|| eyre!("failed to get temporary png path as string"))?;
+                    .ok_or_else(|| eyre::eyre!("failed to get temporary png path as string"))?;
 
                 let status = std::process::Command::new("magick")
                     .arg(temp_heic.path())
                     .arg(format!("png:{temp_png_path}"))
                     .status()
-                    .map_err(|e| eyre!("failed to run imagemagick convert command: {e}"))?;
+                    .wrap_err("failed to run imagemagick convert command")?;
 
                 if !status.success() {
-                    return Err(eyre!("imagemagick convert failed with status: {}", status));
+                    return Err(eyre::eyre!(
+                        "imagemagick convert failed with status: {}",
+                        status
+                    ));
                 }
 
                 let png_data = fs_err::read(temp_png_path)
-                    .map_err(|e| eyre!("failed to read temporary PNG output file: {e}"))?;
+                    .wrap_err("failed to read temporary PNG output file")?;
 
                 image::load_from_memory_with_format(png_data.as_slice(), image::ImageFormat::Png)
-                    .map_err(|e| eyre!("failed to load temporary PNG output into image: {e}"))?
+                    .wrap_err("failed to load temporary PNG output into image")?
             }
         };
 
@@ -198,14 +146,14 @@ impl Mod for ModImpl {
                     );
                     encoder
                         .encode_rgba(img)
-                        .map_err(|e| eyre!("ravif_error: {e}"))?
+                        .wrap_err("ravif_error encoding RGBA")?
                 } else {
                     let rgb = img.to_rgb8();
                     let img =
                         ravif::Img::new(rgb.as_raw().as_rgb(), img.width() as _, img.height() as _);
                     encoder
                         .encode_rgb(img)
-                        .map_err(|e| eyre!("ravif error: {e}"))?
+                        .wrap_err("ravif error encoding RGB")?
                 };
 
                 res.avif_file
@@ -215,7 +163,7 @@ impl Mod for ModImpl {
                 let img = img.to_rgba8();
                 let img = DynamicImage::from(img);
                 webp::Encoder::from_image(&img)
-                    .map_err(|e| eyre!("webp encoder error: {e}"))?
+                    .map_err(|e| eyre::eyre!("webp encoder error: {}", e))?
                     .encode(82.0)
                     .to_vec()
             }
@@ -231,7 +179,7 @@ impl Mod for ModImpl {
                         img.height(),
                         img.color().into(),
                     )
-                    .map_err(|e| eyre!("png encoding error: {e}"))?;
+                    .wrap_err("png encoding error")?;
                 bytes
             }
             ICodec::JXL => {
@@ -242,7 +190,7 @@ impl Mod for ModImpl {
                     .quality(2.8) // that's distance, actually (lower is better)
                     .speed(jpegxl_rs::encode::EncoderSpeed::Squirrel) // effort, 7
                     .build()
-                    .map_err(|e| eyre!("jpegxl encoder build error: {e}"))?;
+                    .wrap_err("jpegxl encoder build error")?;
 
                 // Handle RGB and RGBA cases separately
                 if img.color().has_alpha() {
@@ -251,7 +199,7 @@ impl Mod for ModImpl {
                     let frame = EncoderFrame::new(rgba.as_raw()).num_channels(4);
                     encoder
                         .encode_frame::<_, u8>(&frame, img.width(), img.height())
-                        .map_err(|e| eyre!("jpegxl rgba frame encoding error: {e}"))?
+                        .wrap_err("jpegxl rgba frame encoding error")?
                         .data
                 } else {
                     let rgb = img.to_rgb8();
@@ -259,12 +207,12 @@ impl Mod for ModImpl {
                     let frame = EncoderFrame::new(rgb.as_raw()).num_channels(3);
                     encoder
                         .encode_frame::<_, u8>(&frame, img.width(), img.height())
-                        .map_err(|e| eyre!("jpegxl rgb frame encoding error: {e}"))?
+                        .wrap_err("jpegxl rgb frame encoding error")?
                         .data
                 }
             }
             _ => {
-                return Err(eyre!("unsupported image format: {:?}", ofmt));
+                return Err(eyre::eyre!("unsupported image format: {:?}", ofmt));
             }
         };
 
@@ -288,35 +236,35 @@ impl Mod for ModImpl {
         let (width, height) = match ifmt {
             ICodec::PNG => {
                 let decoder = image::codecs::png::PngDecoder::new(input)
-                    .map_err(|e| eyre!("failed to create PNG decoder: {e}"))?;
+                    .wrap_err("failed to create PNG decoder")?;
                 decoder.dimensions()
             }
             ICodec::JPG => {
                 let decoder = image::codecs::jpeg::JpegDecoder::new(input)
-                    .map_err(|e| eyre!("failed to create JPG decoder: {e}"))?;
+                    .wrap_err("failed to create JPG decoder")?;
                 decoder.dimensions()
             }
             ICodec::WEBP => {
                 let decoder = image::codecs::webp::WebPDecoder::new(input)
-                    .map_err(|e| eyre!("failed to create WEBP decoder: {e}"))?;
+                    .wrap_err("failed to create WEBP decoder")?;
                 decoder.dimensions()
             }
             ICodec::AVIF => {
                 let decoder = image::codecs::avif::AvifDecoder::new(input)
-                    .map_err(|e| eyre!("failed to create AVIF decoder: {e}"))?;
+                    .wrap_err("failed to create AVIF decoder")?;
                 decoder.dimensions()
             }
             ICodec::JXL => {
                 let image = JxlImage::builder()
                     .read(input)
-                    .map_err(|e| eyre!("jxl decoding error: {e}"))?;
+                    .map_err(|e| eyre::eyre!("jxl decoding error: {}", e))?;
                 (image.width(), image.height())
             }
             ICodec::HEIC => {
                 // Using ImageMagick is probably too slow/heavy just for dimensions.
                 // A dedicated HEIC dimensions reader would be better, but for now,
                 // mark as unsupported.
-                return Err(eyre!("heic dimensions: unsupported :("));
+                return Err(eyre::eyre!("heic dimensions: unsupported :("));
             }
         };
         Ok((IntrinsicPixels::from(width), IntrinsicPixels::from(height)))
