@@ -7,7 +7,6 @@ edition = "2024"
 crate-type = ["rlib"]
 
 [dependencies]
-libconfig = { path = "../libconfig" }
 conflux = { path = "../../crates/conflux" }
 
 # impl deps
