@@ -284,7 +284,9 @@ async fn handle_ws_inner(
 
             let image = libimage::load();
             let input_bytes = tokio::fs::read(&input_path).await?;
-            let output_bytes = image.transcode(&input_bytes, src_ic, ICodec::JXL, None)?;
+            let output_bytes = image
+                .transcode(&input_bytes, src_ic, ICodec::JXL, None)
+                .map_err(|e| eyre!("{e}"))?;
             tokio::fs::write(&temp_output_path, output_bytes).await?;
         }
         MediaType::Video => {

@@ -100,7 +100,9 @@ pub async fn do_derive(ts: Arc<MomTenantState>, params: DeriveParams) -> Reply {
         DerivationKind::Bitmap(bitmap) => {
             let input_codec = ICodec::try_from(input.content_type)?;
             // Transcode image using image module
-            libimage::load().transcode(&input_bytes, input_codec, bitmap.ic, bitmap.width)?
+            libimage::load()
+                .transcode(&input_bytes, input_codec, bitmap.ic, bitmap.width)
+                .map_err(|e| eyre!("{e}"))?
         }
         DerivationKind::Video(video) => {
             // Transcode video
@@ -341,12 +343,14 @@ async fn transcode_media(
                 if let Some(postprocess) = target_format.postprocess() {
                     let input_payload = tokio::fs::read(&output_path).await?;
                     let image = libimage::load();
-                    let output_payload = image.transcode(
-                        &input_payload[..],
-                        postprocess.src_ic,
-                        postprocess.dst_ic,
-                        None,
-                    )?;
+                    let output_payload = image
+                        .transcode(
+                            &input_payload[..],
+                            postprocess.src_ic,
+                            postprocess.dst_ic,
+                            None,
+                        )
+                        .map_err(|e| eyre!("{e}"))?;
                     // it's kind of wasteful to write this back to disk, but that's the way it is right now.
                     tokio::fs::write(&output_path, output_payload).await?;
                 }

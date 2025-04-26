@@ -11,9 +11,7 @@ merde = { workspace = true, features = ["time"] }
 time = "0.3.41"
 minijinja = { workspace = true }
 closest = { path = "../closest" }
-libconfig = { path = "../libconfig" }
 plait = { path = "../plait" }
-libimage = { path = "../libimage" }
 content-type = { path = "../content-type" }
 credentials = { path = "../credentials" }
 url = "2.5.4"

@@ -7,10 +7,8 @@ edition = "2024"
 crate-type = ["rlib"]
 
 [dependencies]
-libconfig = { version = "0.1.0", path = "../libconfig" }
 conflux = { version = "0.1.0", path = "../../crates/conflux" }
 html-escape = { version = "0.2.13" }
-libimage = { version = "0.1.0", path = "../libimage" }
 config-types = { version = "0.1.0", path = "../config-types" }
 image-types = { version = "0.1.0", path = "../image-types" }
 autotrait = "0.1.11"

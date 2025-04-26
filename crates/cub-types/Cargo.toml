@@ -4,12 +4,10 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-libconfig = { version = "0.1.0", path = "../libconfig" }
 conflux = { version = "0.1.0", path = "../conflux" }
 eyre.workspace = true
 futures-core = "0.3.31"
 hattip = { version = "0.1.0", path = "../hattip" }
-libmom = { version = "0.1.0", path = "../libmom" }
 libmomclient = { version = "0.1.0", path = "../libmomclient" }
 libobjectstore = { version = "0.1.0", path = "../libobjectstore" }
 libsearch = { version = "0.1.0", path = "../libsearch" }

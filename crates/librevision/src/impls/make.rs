@@ -635,7 +635,10 @@ async fn revision_added(
 
             let props = media_props_cache
                 .get_or_insert_with(&hash, async || {
-                    let (w, h) = mods.image.dimensions(&contents, codec)?;
+                    let (w, h) = mods
+                        .image
+                        .dimensions(&contents, codec)
+                        .map_err(|e| eyre::eyre!(e))?;
 
                     // only @2x images are supported right now (or 1x, with no suffix) — no @3x, etc.
                     let density = if path.as_str().contains("@2x.") {

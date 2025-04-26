@@ -5,10 +5,8 @@ edition = "2024"
 
 [dependencies]
 closest = { version = "0.1.0", path = "../closest" }
-libconfig = { version = "0.1.0", path = "../libconfig" }
 conflux = { version = "0.1.0", path = "../conflux" }
 content-type = { version = "0.1.0", path = "../content-type" }
-libimage = { version = "0.1.0", path = "../libimage" }
 libobjectstore = { version = "0.1.0", path = "../libobjectstore" }
 seahash = "4.1.0"
 tokio.workspace = true
