@@ -199,9 +199,9 @@ impl FontSubsetter {
             .path()
             .join(format!("{font_name}.subset.woff2"));
 
-        let pyftsubset_path = which::which("pyftsubset")?;
-
-        let mut child = tokio::process::Command::new(pyftsubset_path)
+        let mut child = tokio::process::Command::new("uvx")
+            .arg("fonttools")
+            .arg("subset")
             .arg(font_path.as_str())
             .arg(format!("--text={}", used_chars.iter().collect::<String>()))
             .arg("--flavor=woff2")
@@ -338,10 +338,9 @@ mod test {
             .await
             .expect("Failed to write input font");
 
-        let pyftsubset_path = which::which("pyftsubset")
-            .expect("pyftsubset not found - please install fonttools with: brew install fonttools");
-
-        let mut child = Command::new(pyftsubset_path)
+        let mut child = Command::new("uvx")
+            .arg("fonttools")
+            .arg("ttx")
             .arg(input_font_path)
             .arg(format!("--text={included_chars}"))
             .arg("--flavor=woff2")
@@ -374,10 +373,7 @@ mod test {
         stderr_task.await.expect("Failed to join stderr task");
 
         let status = child.wait().await.expect("Failed to wait for pyftsubset");
-        assert!(
-            status.success(),
-            "pyftsubset failed with status: {status}"
-        );
+        assert!(status.success(), "pyftsubset failed with status: {status}");
 
         // Verify the output file exists and has contents
         assert!(std::path::Path::new(output_font_path).exists());
@@ -442,7 +438,9 @@ mod test {
             tokio::fs::write(&temp_font_path, &font_data).await.unwrap();
 
             // Use ttx to dump only the 'cmap' table
-            let output = tokio::process::Command::new("ttx")
+            let output = tokio::process::Command::new("uvx")
+                .arg("fonttools")
+                .arg("ttx")
                 .arg("-o")
                 .arg("-") // Output to stdout
                 .arg("-t")

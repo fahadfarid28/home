@@ -82,16 +82,16 @@ const COMMANDS_TO_CHECK: &[RequiredBin] = &[
     RequiredBin {
         checks: &[
             Check {
-                command: "pyftsubset",
-                args: &["--help"],
+                command: "uvx",
+                args: &["fonttools", "subset", "--help"],
             },
             Check {
-                command: "ttx",
-                args: &["--version"],
+                command: "uvx",
+                args: &["fonttools", "ttx", "--version"],
             },
         ],
         purpose: "Font subsetting for diagrams",
-        notes: "Both pyftsubset and ttx come from fonttools. Install with `brew install fonttools`.",
+        notes: "Install uv with `brew install uv` to get the uvx command.",
         gravity: Gravity::Needed,
     },
     RequiredBin {

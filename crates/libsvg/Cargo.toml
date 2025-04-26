@@ -10,7 +10,6 @@ crate-type = ["rlib"]
 quick-xml = { version = "0.37.3" }
 conflux = { path = "../../crates/conflux" }
 tokio = { workspace = true, features = ["time", "process", "sync"] }
-which = { version = "7.0.2" }
 tempfile = { version = "3.19.1" }
 camino = { version = "1.1.9" }
 base64 = { version = "0.22.1" }
