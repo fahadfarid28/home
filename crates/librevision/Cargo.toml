@@ -10,7 +10,6 @@ crate-type = ["rlib"]
 atomicwrites = { version = "0.4.4" }
 camino = { version = "1.1.9" }
 closest = { version = "0.1.0", path = "../closest" }
-libconfig = { version = "0.1.0", path = "../libconfig" }
 conflux = { version = "0.1.0", path = "../../crates/conflux" }
 content-type = { version = "0.1.0", path = "../content-type" }
 cub-types = { version = "0.1.0", path = "../cub-types" }
