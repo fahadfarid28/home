@@ -7,10 +7,10 @@ edition = "2024"
 crate-type = ["rlib"]
 
 [dependencies]
-autotrait = "0.1.11"
+autotrait = "0.1.12"
 
 # impl deps
-lol_html = { version = "2.0.0" }
+lol_html = { version = "2.3.0" }
 
 [features]
 default = ["impl"]

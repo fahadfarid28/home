@@ -5,8 +5,8 @@ version = "4.0.0"
 
 [dependencies]
 eyre = "0.6.12"
-tokio = { version = "1.44.1", features = ["full"] }
-libc = "0.2.171"
+tokio = { version = "1.44.2", features = ["full"] }
+libc = "0.2.172"
 liberrhandling = { version = "0.1.0", path = "../liberrhandling" }
 libconfig = { version = "0.1.0", path = "../libconfig" }
 libclap = { path = "../libclap" }

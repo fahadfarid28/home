@@ -25,7 +25,7 @@ itertools = { version = "0.14.0" }
 libmarkdown = { version = "0.1.0", path = "../libmarkdown" }
 merde = { workspace = true }
 rayon = { version = "1.10.0" }
-redb = { version = "2.4.0" }
+redb = { version = "2.5.0" }
 seahash = { version = "4.1.0" }
 libsearch = { version = "0.1.0", path = "../libsearch" }
 libsvg = { version = "0.1.0", path = "../libsvg" }

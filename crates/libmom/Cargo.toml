@@ -35,7 +35,7 @@ r2d2_sqlite = { version = "0.28.0" }
 rusqlite = { workspace = true, default-features = false, features = ["time"] }
 serde = { version = "1.0.219", features = ["derive"] }
 time = { version = "0.3.41", features = ["formatting"] }
-tokio = { version = "1.44.1", features = ["full"] }
+tokio = { version = "1.44.2", features = ["full"] }
 tracing = { version = "0.1.41" }
 url = { version = "2.5.4" }
 tempfile = { version = "3.19.1" }
@@ -45,7 +45,7 @@ tokio-stream = { version = "0.1.17" }
 libimage = { version = "0.1.0", path = "../../crates/libimage" }
 uffmpeg = { version = "0.1.0", path = "../../crates/uffmpeg" }
 libsvg = { version = "0.1.0", path = "../../crates/libsvg" }
-bytesize = { version = "2.0.0" }
+bytesize = { version = "2.0.1" }
 futures-core = "0.3.31"
 owo-colors = "4.2.0"
 itertools = "0.14.0"
@@ -53,6 +53,6 @@ libgithub = { version = "0.1.0", path = "../libgithub" }
 libhttpclient = { version = "0.1.0", path = "../libhttpclient" }
 config-types = { version = "0.1.0", path = "../config-types" }
 objectstore-types = { version = "0.1.0", path = "../objectstore-types" }
-autotrait = "0.1.11"
+autotrait = "0.1.12"
 mom-types = { version = "0.1.0", path = "../mom-types" }
 image-types = { version = "0.1.0", path = "../image-types" }
