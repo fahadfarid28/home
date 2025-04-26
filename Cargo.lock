@@ -78,7 +78,6 @@ dependencies = [
  "cfg-if",
  "getrandom 0.2.16",
  "once_cell",
- "serde",
  "version_check",
  "zerocopy 0.7.35",
 ]
@@ -504,23 +503,6 @@ checksum = "874bb8112abecc98cbd6d81ea4fa7e94fb9449648c93cc89aa40c81c24d7de03"
 dependencies = [
  "alloc-no-stdlib",
  "alloc-stdlib",
-]
-
-[[package]]
-name = "browserslist-rs"
-version = "0.17.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "74c973b79d9b6b89854493185ab760c6ef8e54bcfad10ad4e33991e46b374ac8"
-dependencies = [
- "ahash 0.8.11",
- "chrono",
- "either",
- "indexmap",
- "itertools 0.13.0",
- "nom",
- "serde",
- "serde_json",
- "thiserror 1.0.69",
 ]
 
 [[package]]
@@ -3287,15 +3269,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "liblightningcss"
-version = "0.1.0"
-dependencies = [
- "autotrait",
- "eyre",
- "lightningcss",
-]
-
-[[package]]
 name = "libm"
 version = "0.2.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3673,7 +3646,6 @@ checksum = "c84f971730745f4aaac013b6cf4328baf1548efc973c0d95cfd843a3c1ca07af"
 dependencies = [
  "ahash 0.8.11",
  "bitflags 2.9.0",
- "browserslist-rs",
  "const-str",
  "cssparser 0.33.0",
  "cssparser-color",
