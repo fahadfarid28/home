@@ -17,8 +17,8 @@ merde = { workspace = true, features = ["camino"] }
 base64 = "0.22.1"
 serde_json = { version = "1.0.140" }
 owo-colors = { version = "4.2.0" }
-facet-json = "0.16.0"
-facet-pretty = "0.16"
+facet-json.workspace = true
+facet-pretty.workspace = true
 autotrait = "0.1.11"
 eyre.workspace = true
 config-types = { version = "0.1.0", path = "../config-types" }

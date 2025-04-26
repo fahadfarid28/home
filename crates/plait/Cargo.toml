@@ -2,9 +2,8 @@
 name = "plait"
 version = "0.1.0"
 edition = "2024"
-
 [dependencies]
-facet = "0.16.0"
+facet = { version = "0.16.0", workspace = true }
 
 [dev-dependencies]
 merde = { workspace = true, features = ["serialize", "deserialize", "json"] }

@@ -24,7 +24,7 @@ image-types = { version = "0.1.0", path = "../image-types" }
 objectstore-types = { version = "0.1.0", path = "../objectstore-types" }
 eyre.workspace = true
 config-types = { version = "0.1.0", path = "../config-types" }
-facet = "0.16.0"
+facet.workspace = true
 
 [features]
 default = []

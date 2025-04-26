@@ -330,6 +330,7 @@ merde::derive! {
 
 #[derive(Facet, Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(transparent)]
+#[facet(transparent)]
 pub struct FontWeight(pub u16);
 
 impl std::fmt::Display for FontWeight {
@@ -363,6 +364,7 @@ merde::derive! {
 
 #[derive(Facet, Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
+#[facet(rename_all = "lowercase")]
 #[repr(u8)]
 pub enum FontStyle {
     #[default]

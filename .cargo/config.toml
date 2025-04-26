@@ -12,9 +12,3 @@ rustflags = [
     # (Nightly) Make the current crate share its generic instantiations
     "-Zshare-generics=y",
 ]
-
-[patch.crates-io]
-# facet = { path = "../facet/facet" }
-# facet-core = { path = "../facet/facet-core" }
-# facet-json = { path = "../facet/facet-json" }
-# facet-pretty = { path = "../facet/facet-pretty" }
