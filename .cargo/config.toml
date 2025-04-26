@@ -9,11 +9,10 @@ feature-unification = "workspace"
 
 [build]
 rustflags = [
-    # (Nightly) Make the current crate share its generic instantiations
-    "-Cprefer-dynamic",
+    # "-Cprefer-dynamic",
     "-Zshare-generics=y",
-    "-Zunstable-options",
     "-Wunused-crate-dependencies",
-    "--extern",
-    "force:std",
+    # "-Zunstable-options",
+    # "--extern",
+    # "force:std",
 ]
