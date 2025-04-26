@@ -9,7 +9,7 @@ use super::h_to_axum;
 pub(crate) fn routes() -> Router {
     Router::new()
         .route("/", get(serve_root))
-        .route("/*path", get(serve_asset))
+        .route("/{*path}", get(serve_asset))
 }
 
 async fn serve_root() -> LegacyReply {

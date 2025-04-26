@@ -37,10 +37,10 @@ pub(crate) fn web_routes() -> Router {
         .route("/robots.txt", get(robots_txt))
         .route("/whoami", get(whoami))
         .route("/index.xml", get(atom_feed))
-        .route("/extra-files/*path", get(extra_files))
+        .route("/extra-files/{*path}", get(extra_files))
         .route("/favicon.ico", get(favicon))
         .route("/", get(serve_page_route))
-        .route("/*path", get(serve_page_route))
+        .route("/{*path}", get(serve_page_route))
 }
 
 async fn robots_txt() -> &'static str {

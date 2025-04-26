@@ -38,7 +38,7 @@ impl KeyPermissions {
 pub(super) async fn serve(listener: tokio::net::TcpListener) -> Result<()> {
     let app = Router::new()
         .nest(
-            "/tenant/:tenant_name",
+            "/tenant/{tenant_name}",
             tenant::tenant_routes().layer(
                 axum::middleware::from_fn(
                     |req: axum::http::Request<axum::body::Body>, next: axum::middleware::Next| async move {

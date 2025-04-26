@@ -768,7 +768,7 @@ fn mark_series_links(lpage: &mut LoadedPage) -> eyre::Result<()> {
         }
         .ok_or_else(|| {
             eyre!(
-                "Invalid series part path: expected `/series/:slug/part-N`, but got '{}'",
+                "Invalid series part path: expected `/series/{{slug}}/part-N`, but got '{}'",
                 lpage.route
             )
         })?;

@@ -1,8 +1,7 @@
 use crate::impls::reply::{IntoLegacyReply, LegacyHttpError, LegacyReply};
 use axum::{
-    http,
+    Router, http,
     routing::{get, post},
-    Router,
 };
 use http::StatusCode;
 
@@ -21,9 +20,10 @@ pub(crate) fn public_api_routes() -> Router {
             post(update_userinfo::serve_update_userinfo),
         )
         .route("/link-preview", get(link_preview::serve_link_preview))
-        .route("/*splat", get(serve_api_not_found))
+        .route("/{*splat}", get(serve_api_not_found))
 }
 
 async fn serve_api_not_found() -> LegacyReply {
-    LegacyHttpError::with_status(StatusCode::NOT_FOUND, "API endpoint not found").into_legacy_reply()
+    LegacyHttpError::with_status(StatusCode::NOT_FOUND, "API endpoint not found")
+        .into_legacy_reply()
 }

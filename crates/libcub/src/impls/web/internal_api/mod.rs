@@ -47,7 +47,7 @@ pub(crate) fn internal_api_routes() -> Router {
         .route("/download-url", get(download_url::download_url))
         .route("/builtins/ansi.css", get(ansi_css))
         .route("/builtins/livereload.js", get(livereload_js))
-        .route("/*splat", get(serve_api_not_found))
+        .route("/{*splat}", get(serve_api_not_found))
 }
 
 async fn serve_api_not_found() -> LegacyReply {

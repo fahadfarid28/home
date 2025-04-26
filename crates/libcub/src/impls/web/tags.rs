@@ -5,13 +5,13 @@ use crate::impls::{
 use axum::{extract::Path, response::Redirect};
 use content_type::ContentType;
 
-use axum::{routing::get, Router};
+use axum::{Router, routing::get};
 
 pub(crate) fn tag_routes() -> Router<()> {
     Router::new()
         .route("/", get(serve_list))
-        .route("/:tag", get(serve_single))
-        .route("/:tag/", get(redirect_to_slashless))
+        .route("/{tag}", get(serve_single))
+        .route("/{tag}/", get(redirect_to_slashless))
 }
 
 async fn serve_list(tr: CubReqImpl) -> LegacyReply {

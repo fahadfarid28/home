@@ -39,11 +39,11 @@ pub fn tenant_routes() -> Router {
         .route("/github/callback", post(github_callback))
         .route("/auth-bundle/update", post(auth_bundle_update))
         .route("/objectstore/list-missing", post(objectstore_list_missing))
-        .route("/objectstore/put/*key", put(objectstore_put_key))
+        .route("/objectstore/put/{*key}", put(objectstore_put_key))
         .route("/media/upload", get(media::upload))
         .route("/media/transcode", post(media::transcode))
         .route("/derive", post(derive::derive))
-        .route("/revision/upload/:revision_id", put(revision_upload_revid))
+        .route("/revision/upload/{revision_id}", put(revision_upload_revid))
 }
 
 async fn patreon_callback(
