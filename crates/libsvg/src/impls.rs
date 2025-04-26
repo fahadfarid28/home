@@ -200,6 +200,8 @@ impl FontSubsetter {
             .join(format!("{font_name}.subset.woff2"));
 
         let mut child = tokio::process::Command::new("uvx")
+            .arg("--with")
+            .arg("brotli")
             .arg("fonttools")
             .arg("subset")
             .arg(font_path.as_str())
